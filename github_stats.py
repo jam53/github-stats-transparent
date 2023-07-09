@@ -229,14 +229,14 @@ class Stats(object):
     """
     Retrieve and store statistics about GitHub usage.
     """
-    def __init__(self, username: str, access_token: str,
-                 session: aiohttp.ClientSession,
-                 exclude_repos: Optional[Set] = None,
-                 exclude_langs: Optional[Set] = None,
+    def __init__(self, username: str, access_token: str, session: aiohttp.ClientSession,
+                 exclude_repos: Optional[Set] = None, exclude_langs: Optional[Set] = None,
+                 exclude_folders: Optional[Dict[str, List[str]]] = None,
                  consider_forked_repos: bool = False):
         self.username = username
         self._exclude_repos = set() if exclude_repos is None else exclude_repos
         self._exclude_langs = set() if exclude_langs is None else exclude_langs
+        self._exclude_folders = {} if exclude_folders is None else exclude_folders
         self._consider_forked_repos = consider_forked_repos
         self.queries = Queries(username, access_token, session)
 
@@ -325,6 +325,17 @@ Languages:
                 self._repos.add(name)
                 self._stargazers += repo.get("stargazers").get("totalCount", 0)
                 self._forks += repo.get("forkCount", 0)
+
+                # Exclude specific folders from statistics
+                excluded_folders = self._exclude_folders.get(name, [])
+                if excluded_folders:
+                    continue_processing = False
+                    for folder in excluded_folders:
+                        if folder in name:
+                            continue_processing = True
+                            break
+                    if continue_processing:
+                        continue
 
                 for lang in repo.get("languages", {}).get("edges", []):
                     name = lang.get("node", {}).get("name", "Other")
