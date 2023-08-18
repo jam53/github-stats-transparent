@@ -231,12 +231,10 @@ class Stats(object):
     """
     def __init__(self, username: str, access_token: str, session: aiohttp.ClientSession,
                  exclude_repos: Optional[Set] = None, exclude_langs: Optional[Set] = None,
-                 exclude_folders: Optional[Dict[str, List[str]]] = None,
                  consider_forked_repos: bool = False):
         self.username = username
         self._exclude_repos = set() if exclude_repos is None else exclude_repos
         self._exclude_langs = set() if exclude_langs is None else exclude_langs
-        self._exclude_folders = {} if exclude_folders is None else exclude_folders
         self._consider_forked_repos = consider_forked_repos
         self.queries = Queries(username, access_token, session)
 
@@ -279,6 +277,15 @@ Languages:
         self._languages = dict()
         self._repos = set()
         self._ignored_repos = set()
+
+        substract_langs_bytes = {
+            # - Added as EXCLUDED - "jam53/FPSSample": {}, # ["Packages, Assets"],
+            # - No code committed yet - "jam53/Starlex": {}, # ["Packages, Assets"],
+            "jam53/Octraon": {"C#": 346924, "ShaderLab": 18498, "GLSL": 7913}, # ["All folders in root", "Assets/All folders excluding the one containing the scripts & other stuff I wrote"],
+            "jam53/SmashAndFly": {"C#": 189343, "ShaderLab": 64636, "HLSL": 9089}, # ["All folders in root", "Assets/All folders excluding the one containing the scripts & other stuff I wrote"],
+            "jam53/Stelexo": {"C#": 2447889, "ShaderLab": 147056, "HLSL": 16660, "GLSL": 2299, "PHP": 17293}, # ["All folders in root", "Assets/All folders except Stelexo"],
+            "jam53/AstroRun": {"C#": 1062203, "ShaderLab": 70382, "HLSL": 9089}, # ["All folders in root", "Assets/all folders except RiolRat"],
+        }
         
         next_owned = None
         next_contrib = None
@@ -326,23 +333,17 @@ Languages:
                 self._stargazers += repo.get("stargazers").get("totalCount", 0)
                 self._forks += repo.get("forkCount", 0)
 
-                # Exclude specific folders from statistics
-                excluded_folders = self._exclude_folders.get(name, [])
-                if excluded_folders:
-                    continue_processing = False
-                    for folder in excluded_folders:
-                        if folder in name:
-                            continue_processing = True
-                            break
-                    if continue_processing:
-                        continue
-
                 for lang in repo.get("languages", {}).get("edges", []):
                     name = lang.get("node", {}).get("name", "Other")
                     languages = await self.languages
                     if name in self._exclude_langs: continue
                     if name in languages:
                         languages[name]["size"] += lang.get("size", 0)
+
+                        toDeduct = substract_langs_bytes.get(repo.get("nameWithOwner"), {}).get(name)
+                        if toDeduct != None:
+                            languages[name]["size"] -= toDeduct
+
                         languages[name]["occurrences"] += 1
                     else:
                         languages[name] = {
@@ -350,6 +351,10 @@ Languages:
                             "occurrences": 1,
                             "color": lang.get("node", {}).get("color")
                         }
+
+                        toDeduct = substract_langs_bytes.get(repo.get("nameWithOwner"), {}).get(name)
+                        if toDeduct != None:
+                            languages[name]["size"] -= toDeduct
 
             if owned_repos.get("pageInfo", {}).get("hasNextPage", False) or \
                     contrib_repos.get("pageInfo", {}).get("hasNextPage", False):
@@ -491,8 +496,11 @@ Languages:
                     continue
 
                 for week in author_obj.get("weeks", []):
-                    additions += week.get("a", 0)
-                    deletions += week.get("d", 0)
+                    if week.get("a", 0) <= 4000:
+                        additions += week.get("a", 0)
+
+                    if week.get("d", 0) <= 1000:
+                        deletions += week.get("d", 0)
 
         self._lines_changed = (additions, deletions)
         return self._lines_changed

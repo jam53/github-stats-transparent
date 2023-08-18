@@ -104,61 +104,17 @@ async def main() -> None:
     if not access_token:
         # access_token = os.getenv("GITHUB_TOKEN")
         raise Exception("A personal access token is required to proceed!")
-    user = os.getenv("GITHUB_ACTOR")
-    exclude_repos = os.getenv("EXCLUDED")
+    user = "jam53" # os.getenv("GITHUB_ACTOR")
+    exclude_repos = "jam53/FPSSample" #os.getenv("EXCLUDED")
     exclude_repos = ({x.strip() for x in exclude_repos.split(",")}
                      if exclude_repos else None)
-    exclude_langs = os.getenv("EXCLUDED_LANGS")
+    exclude_langs = "HLSL, ShaderLab, GLSL, PHP, Inno Setup, Batchfile, VBScript" # os.getenv("EXCLUDED_LANGS")
     exclude_langs = ({x.strip() for x in exclude_langs.split(",")}
                      if exclude_langs else None)
-    exclude_folders = {
-        "jam53/FPSSample": ["Packages"],
-        "jam53/FPSSample": ["Assets"],
-        "jam53/Starlex": ["Packages"],
-        "jam53/Starlex": ["Assets"],
-        "jam53/Octraon": ["Packages"],
-        "jam53/Octraon": ["Assets/EffectExamples"],
-        "jam53/Octraon": ["Assets/FingersLite"],
-        "jam53/Octraon": ["Assets/Free Asset - 2D Handcrafted Art"],
-        "jam53/Octraon": ["Assets/Free_Pack"],
-        "jam53/Octraon": ["Assets/SampleScenes"],
-        "jam53/Octraon": ["Assets/Standard Assets"],
-        "jam53/SmashAndFly": ["Packages"],
-        "jam53/SmashAndFly": ["Assets/ExampleAssets"],
-        "jam53/SmashAndFly": ["Assets/Plugins"],
-        "jam53/SmashAndFly": ["Assets/TextMesh Pro"],
-        "jam53/Stelexo": ["Packages"],
-        "jam53/Stelexo": ["Assets/Easy Save 2"],
-        "jam53/Stelexo": ["Assets/EffectExamples"],
-        "jam53/Stelexo": ["Assets/FPS All-In-One"],
-        "jam53/Stelexo": ["Assets/FPSSample"],
-        "jam53/Stelexo": ["Assets/First_Person_Controller"],
-        "jam53/Stelexo": ["Assets/InputManager"],
-        "jam53/Stelexo": ["Assets/Lava_Flowing_Shader"],
-        "jam53/Stelexo": ["Assets/Looader"],
-        "jam53/Stelexo": ["Assets/NVIDIA"],
-        "jam53/Stelexo": ["Assets/Plugins"],
-        "jam53/Stelexo": ["Assets/ProcGen"],
-        "jam53/Stelexo": ["Assets/Standard Assets"],
-        "jam53/Stelexo": ["Assets/TextMesh Pro"],
-        "jam53/Stelexo": ["Assets/Ultimate HUD Skins"],
-        "jam53/AstroRun": ["Packages"],
-        "jam53/AstroRun": ["Assets/2DGamekit"],
-        "jam53/AstroRun": ["Assets/AddressableAssetsData"],
-        "jam53/AstroRun": ["Assets/GooglePlayGames"],
-        "jam53/AstroRun": ["Assets/Joystick Pack"],
-        "jam53/AstroRun": ["Assets/LeanTween"],
-        "jam53/AstroRun": ["Assets/Plugins"],
-        "jam53/AstroRun": ["Assets/StandardAssets"],
-        "jam53/AstroRun": ["Assets/TextMesh Pro"],
-        "jam53/AstroRun": ["Assets/Water Reflection"],
-        "jam53/AstroRun": ["Assets/Zone UI"],
-        "jam53/AstroRun": ["Assets/Zone UI"],
-    }
-    consider_forked_repos = len(os.getenv("COUNT_STATS_FROM_FORKS")) != 0
+    consider_forked_repos = False # len(os.getenv("COUNT_STATS_FROM_FORKS")) != 0
     async with aiohttp.ClientSession() as session:
         s = Stats(user, access_token, session, exclude_repos=exclude_repos,
-                  exclude_langs=exclude_langs, exclude_folders=exclude_folders,
+                  exclude_langs=exclude_langs,
                   consider_forked_repos=consider_forked_repos)
         await asyncio.gather(generate_languages(s), generate_overview(s))
 
