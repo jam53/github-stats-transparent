@@ -285,7 +285,7 @@ Languages:
             "jam53/SmashAndFly": {"C#": 189343, "ShaderLab": 64636, "HLSL": 9089}, # ["All folders in root", "Assets/All folders excluding the one containing the scripts & other stuff I wrote"],
             "jam53/Stelexo": {"C#": 2447889, "ShaderLab": 147056, "HLSL": 16660, "GLSL": 2299, "PHP": 17293}, # ["All folders in root", "Assets/All folders except Stelexo"],
             "jam53/AstroRun": {"C#": 1062203, "ShaderLab": 70382, "HLSL": 9089}, # ["All folders in root", "Assets/all folders except RiolRat"],
-            "jam53/Takma": {"TypeScript": 216668}, # ["Only src/scripts/I18/Translation.ts and src/scripts/I18/Translations.ts"],
+            "jam53/Takma": {"TypeScript": 235686}, # ["Only src/scripts/I18/Translation.ts and src/scripts/I18/Translations.ts"],
         }
         
         next_owned = None
