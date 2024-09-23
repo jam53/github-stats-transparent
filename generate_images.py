@@ -108,7 +108,7 @@ async def main() -> None:
     exclude_repos = "jam53/FPSSample" #os.getenv("EXCLUDED")
     exclude_repos = ({x.strip() for x in exclude_repos.split(",")}
                      if exclude_repos else None)
-    exclude_langs = "HLSL, ShaderLab, GLSL, PHP, Inno Setup, Batchfile, VBScript, CSS, HTML" # os.getenv("EXCLUDED_LANGS")
+    exclude_langs = "HLSL, ShaderLab, GLSL, PHP, Inno Setup, Batchfile, VBScript, CSS, HTML, TeX" # os.getenv("EXCLUDED_LANGS")
     exclude_langs = ({x.strip() for x in exclude_langs.split(",")}
                      if exclude_langs else None)
     consider_forked_repos = False # len(os.getenv("COUNT_STATS_FROM_FORKS")) != 0
