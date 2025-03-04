@@ -229,8 +229,10 @@ class Stats(object):
     """
     Retrieve and store statistics about GitHub usage.
     """
-    def __init__(self, username: str, access_token: str, session: aiohttp.ClientSession,
-                 exclude_repos: Optional[Set] = None, exclude_langs: Optional[Set] = None,
+    def __init__(self, username: str, access_token: str,
+                 session: aiohttp.ClientSession,
+                 exclude_repos: Optional[Set] = None,
+                 exclude_langs: Optional[Set] = None,
                  consider_forked_repos: bool = False):
         self.username = username
         self._exclude_repos = set() if exclude_repos is None else exclude_repos
